@@ -448,7 +448,8 @@ class CourseUpdateNextSectionResolver(PrefixedDebugLoggerMixin, RecipientResolve
                 self.async_send_task.apply_async((self.site.id, str(msg)), retry=False)
 
     def get_schedules(self):
-        schedules = get_schedules_with_due_date(self.course_key, self.target_datetime.date())
+        target_date = self.target_datetime.date()
+        schedules = get_schedules_with_due_date(self.course_key, target_date)
 
         template_context = get_base_template_context(self.site)
         for schedule in schedules:
@@ -457,7 +458,7 @@ class CourseUpdateNextSectionResolver(PrefixedDebugLoggerMixin, RecipientResolve
             user = enrollment.user
 
             try:
-                week_highlights, week_num = get_next_section_highlights(user, course.id)
+                week_highlights, week_num = get_next_section_highlights(user, course.id, target_date)
             except CourseUpdateDoesNotExist:
                 LOG.warning(
                     u'Weekly highlights for user {} of course {} does not exist or is disabled'.format(
