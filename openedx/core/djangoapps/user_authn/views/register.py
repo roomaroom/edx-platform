@@ -558,19 +558,12 @@ class RegistrationView(APIView):
             return
 
         try:
-            user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
-            if 'iphone' in user_agent:
-                agent_category = 'ios'
-            elif 'android' in user_agent:
-                agent_category = 'android'
-            else:
-                agent_category = 'other'
             for field_key, errors in errors.items():
                 for error in errors:
                     log.info(
-                        'status_code=%d, agent_category=%s, field=%s, error=%s',
+                        'message=registration_failed, status_code=%d, agent="%s", field="%s", error="%s"',
                         status_code,
-                        agent_category,
+                        request.META.get('HTTP_USER_AGENT', ''),
                         field_key,
                         error['user_message']
                     )
